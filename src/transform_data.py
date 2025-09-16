@@ -9,6 +9,7 @@ This module handles cleaning and transforming the extracted data:
 
 import pandas as pd
 import numpy as np
+import math
 
 def clean_airports(airports_df):
     """
@@ -49,7 +50,6 @@ def clean_airports(airports_df):
     # TODO: Print how many airports remain after cleaning
     print(f"After cleaning: {len(df)} airports remain")
     
-    print("⚠️  Airport cleaning not yet implemented")
     return df
 
 def clean_flights(flights_df):
@@ -90,19 +90,25 @@ def clean_flights(flights_df):
     df = flights_df.copy()
     
     # TODO: Assign column names to the DataFrame
+    df.columns = expected_columns
     
     # TODO: Remove flights with missing coordinates
-    
+    df = df.dropna(subset=['latitude', 'longitude'])
+
     # TODO: Convert altitude from meters to feet (multiply by 3.28084)
     # This makes it easier to understand for aviation
+    df['altitude'] = df['altitude'] * 3.28084
     
     # TODO: Remove flights with invalid coordinates
     # Same coordinate bounds as airports
+    df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
+    df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
     
     # TODO: Clean callsign (remove extra whitespace)
+    df['callsign'] = df['callsign'].str.strip()
     
     # TODO: Print how many flights remain after cleaning
-    # print(f"After cleaning: {len(df)} flights remain")
+    print(f"After cleaning: {len(df)} flights remain")
     
     print("⚠️  Flight cleaning not yet implemented")
     return df
@@ -133,9 +139,23 @@ def combine_data(airports_df, flights_df):
     # TODO (Optional): If you want to try something more advanced,
     # you could find the nearest airport for each flight:
     # 
-    # def find_nearest_airport(flight_lat, flight_lon, airports_df):
+    def find_nearest_airport(flight_lat, flight_lon, airports_df):
     #     # Calculate distances and return nearest airport
-    #     pass
+        nearest_distance = + np.inf
+        nearest_airport = str()
+        for airport in airports_df :
+            phi1 = math.radians(flight_lat)
+            phi2 = math.radians(airport['latitude'])
+            dphi = math.radians(flight_lat - airport['latitude'])
+            dlambda = math.radians(flight_lon - airport['longitude'])
+            a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            distance = R * c
+            if distance < nearest_distance :
+                nearest_distance = distance
+                nearest_airport = airport['name']
+
+        return nearest_airport, nearest_distance
     
     return airports_df, flights_df
 

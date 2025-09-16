@@ -25,7 +25,7 @@ def extract_airports():
         # The file is located at: data/airports.csv
         
         # For now, return an empty DataFrame
-        df = pd.read_csv("ETL-AirLife/data/airports.csv")
+        df = pd.read_csv("data/airports.csv")
         
         # TODO: Print how many airports were loaded
         print(f"Loaded {len(df)} airports")
@@ -127,5 +127,6 @@ if __name__ == "__main__":
         # Test flight extraction
         flights = extract_flights()
         print(f"Flight extraction returned DataFrame with shape: {flights.shape}")
+        print(f"Types renvoyés : {flights.dtypes}, {flights.columns}")
     else:
         print("Skipping flight extraction due to API issues")
