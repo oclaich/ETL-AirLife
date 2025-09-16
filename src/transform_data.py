@@ -32,22 +32,22 @@ def clean_airports(airports_df):
     
     # TODO: Remove rows with missing latitude or longitude
     # Hint: Use .dropna(subset=['latitude', 'longitude'])
-    # df = df.dropna(subset=['latitude', 'longitude'])
+    df = df.dropna(subset=['latitude', 'longitude'])
     
     # TODO: Remove airports with invalid coordinates
     # Latitude should be between -90 and 90
     # Longitude should be between -180 and 180
-    # Hint: df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
-    # Hint: df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
+    df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
+    df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
     
     # TODO: Handle missing IATA codes (replace empty strings or 'N' with None)
-    # Hint: df['iata_code'] = df['iata_code'].replace(['', 'N', '\\N'], None)
+    df['iata_code'] = df['iata_code'].replace(['', 'N', '\\N'], None)
     
     # TODO: Convert altitude to numeric (handle non-numeric values)
-    # Hint: df['altitude'] = pd.to_numeric(df['altitude'], errors='coerce')
+    df['altitude'] = pd.to_numeric(df['altitude'], errors='coerce')
     
     # TODO: Print how many airports remain after cleaning
-    # print(f"After cleaning: {len(df)} airports remain")
+    print(f"After cleaning: {len(df)} airports remain")
     
     print("⚠️  Airport cleaning not yet implemented")
     return df
@@ -90,7 +90,6 @@ def clean_flights(flights_df):
     df = flights_df.copy()
     
     # TODO: Assign column names to the DataFrame
-    # Hint: df.columns = expected_columns
     
     # TODO: Remove flights with missing coordinates
     # Hint: df = df.dropna(subset=['longitude', 'latitude'])

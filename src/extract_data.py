@@ -26,12 +26,11 @@ def extract_airports():
         # Hint: Use pd.read_csv()
         
         # For now, return an empty DataFrame
-        df = pd.DataFrame()
+        df = pd.read_csv("ETL-AirLife/data/airports.csv")
         
         # TODO: Print how many airports were loaded
-        # Example: print(f"Loaded {len(df)} airports")
+        print(f"Loaded {len(df)} airports")
         
-        print("⚠️  Airport extraction not yet implemented")
         return df
         
     except Exception as e:
@@ -62,27 +61,25 @@ def extract_flights():
         print("Making API request... (this may take a few seconds)")
         
         # TODO: Make the API request using requests.get()
-        # Hint: response = requests.get(url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=10)
         
         # TODO: Check if the response is successful
-        # Hint: Check response.status_code == 200
+        if response.status_code == 200 :
         
         # TODO: Get the JSON data from the response
-        # Hint: data = response.json()
+            data = response.json()
         
         # TODO: Extract the 'states' data from the JSON
         # The API returns: {"time": 123456789, "states": [[aircraft_data], [aircraft_data], ...]}
-        # Hint: states = data['states'] if data['states'] else []
+            states = data['states'] if data['states'] else []
         
         # TODO: Convert to DataFrame
-        # Hint: df = pd.DataFrame(states)
+            df = pd.DataFrame(states)
         
         # TODO: Print how many flights were found
-        # Example: print(f"Found {len(df)} active flights")
+            print(f"Found {len(df)} active flights")
         
-        # For now, return empty DataFrame
-        print("⚠️  Flight extraction not yet implemented")
-        return pd.DataFrame()
+        return df
         
     except requests.exceptions.RequestException as e:
         print(f"❌ Network error fetching flight data: {e}")
