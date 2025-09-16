@@ -92,19 +92,14 @@ def clean_flights(flights_df):
     # TODO: Assign column names to the DataFrame
     
     # TODO: Remove flights with missing coordinates
-    # Hint: df = df.dropna(subset=['longitude', 'latitude'])
     
     # TODO: Convert altitude from meters to feet (multiply by 3.28084)
     # This makes it easier to understand for aviation
-    # Hint: df['altitude'] = df['altitude'] * 3.28084
     
     # TODO: Remove flights with invalid coordinates
     # Same coordinate bounds as airports
-    # Hint: df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
-    # Hint: df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
     
     # TODO: Clean callsign (remove extra whitespace)
-    # Hint: df['callsign'] = df['callsign'].str.strip()
     
     # TODO: Print how many flights remain after cleaning
     # print(f"After cleaning: {len(df)} flights remain")

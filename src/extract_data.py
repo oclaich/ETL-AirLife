@@ -23,7 +23,6 @@ def extract_airports():
     try:
         # TODO: Read the airports.csv file using pandas
         # The file is located at: data/airports.csv
-        # Hint: Use pd.read_csv()
         
         # For now, return an empty DataFrame
         df = pd.read_csv("ETL-AirLife/data/airports.csv")
