@@ -32,24 +32,30 @@ def clean_airports(airports_df):
     
     # TODO: Remove rows with missing latitude or longitude
     # Hint: Use .dropna(subset=['latitude', 'longitude'])
-    # df = df.dropna(subset=['latitude', 'longitude'])
+    df = df.dropna(subset=['latitude', 'longitude']) # Subset = groupe de colonne
     
     # TODO: Remove airports with invalid coordinates
     # Latitude should be between -90 and 90
     # Longitude should be between -180 and 180
-    # Hint: df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
+    # Hint: 
     # Hint: df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
+    # df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
+    df = df[(df["latitude"] < 90) & (df["latitude"] > -90) ]
+    df = df[(df["longitude"] < 180) & (df["longitude"] > -180) ]
     
     # TODO: Handle missing IATA codes (replace empty strings or 'N' with None)
     # Hint: df['iata_code'] = df['iata_code'].replace(['', 'N', '\\N'], None)
+    df['iata_code'] = df['iata_code'].replace(['', 'N', '\\N'], None)
     
     # TODO: Convert altitude to numeric (handle non-numeric values)
     # Hint: df['altitude'] = pd.to_numeric(df['altitude'], errors='coerce')
+    df['altitude'] = pd.to_numeric( df['altitude'], errors = 'coerce')
     
     # TODO: Print how many airports remain after cleaning
-    # print(f"After cleaning: {len(df)} airports remain")
-    
-    print("⚠️  Airport cleaning not yet implemented")
+    print(f'Il reste {len(df)} aeroport après nettoyage.')  
+    # print(f"After cleaning: {len(df)} airports remain")  
+
+    # print("⚠️  Airport cleaning not yet implemented")
     return df
 
 def clean_flights(flights_df):
@@ -79,39 +85,62 @@ def clean_flights(flights_df):
         'last_contact',     # Unix timestamp of last contact
         'longitude',        # Aircraft longitude
         'latitude',         # Aircraft latitude
-        'altitude',         # Aircraft altitude in meters
+        'baro_altitude',         # Aircraft altitude in meters
         'on_ground',        # Boolean: is aircraft on ground
         'velocity',         # Ground speed in m/s
         'true_track',       # Aircraft heading in degrees
-        'vertical_rate'     # Vertical speed in m/s
+        'vertical_rate',     # Vertical speed in m/s
+        'sensors',
+        'geo_altitude',
+        'squawk',
+        'spi',
+        'position_source'
+        # 'category'
     ]
     
     # Make a copy to avoid modifying the original
     df = flights_df.copy()
     
     # TODO: Assign column names to the DataFrame
-    # Hint: df.columns = expected_columns
+    df.columns = expected_columns
     
     # TODO: Remove flights with missing coordinates
-    # Hint: df = df.dropna(subset=['longitude', 'latitude'])
+    df = df.dropna(subset=['longitude', 'latitude'])
+
     
     # TODO: Convert altitude from meters to feet (multiply by 3.28084)
     # This makes it easier to understand for aviation
-    # Hint: df['altitude'] = df['altitude'] * 3.28084
+    df["baro_altitude"] = df["baro_altitude"] * 3.28084
     
     # TODO: Remove flights with invalid coordinates
     # Same coordinate bounds as airports
-    # Hint: df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
-    # Hint: df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
+    df = df[(df["latitude"] < 90) & (df["latitude"] > -90) ]
+    df = df[(df["longitude"] < 180) & (df["longitude"] > -180) ]
     
     # TODO: Clean callsign (remove extra whitespace)
-    # Hint: df['callsign'] = df['callsign'].str.strip()
+    df['callsign'] = df["callsign"].str.strip()
     
     # TODO: Print how many flights remain after cleaning
-    # print(f"After cleaning: {len(df)} flights remain")
+    print(f"After cleaning: {len(df)} flights remain")
     
     print("⚠️  Flight cleaning not yet implemented")
     return df
+
+
+    # Hint: df.columns = expected_columns
+
+    # Hint: df = df.dropna(subset=['longitude', 'latitude'])
+
+    # Hint: df['altitude'] = df['altitude'] * 3.28084
+
+
+
+    # Hint: df = df[(df['latitude'] >= -90) & (df['latitude'] <= 90)]
+    # Hint: df = df[(df['longitude'] >= -180) & (df['longitude'] <= 180)]
+
+
+    # Hint: df['callsign'] = df['callsign'].str.strip()
+
 
 def combine_data(airports_df, flights_df):
     """
@@ -138,10 +167,31 @@ def combine_data(airports_df, flights_df):
     
     # TODO (Optional): If you want to try something more advanced,
     # you could find the nearest airport for each flight:
-    # 
-    # def find_nearest_airport(flight_lat, flight_lon, airports_df):
-    #     # Calculate distances and return nearest airport
-    #     pass
+    #   
+    def find_nearest_airport(flight_lat, flight_lon, airports_df):
+        distance = []
+
+        def haversine(lat1, lon1, lat2, lon2):
+            R = 6371  # rayon moyen de la Terre en km
+            
+            # conversion en radians
+            lat1, lon1, lat2, lon2 = map(np.radians, [lat1, lon1, lat2, lon2])
+            
+            dlat = lat2 - lat1
+            dlon = lon2 - lon1
+            
+            a = np.sin(dlat/2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlon/2)**2
+            c = 2 * np.arcsin(np.sqrt(a))
+            
+            return R * c  # distance en km
+        
+        for longitude, latitude in zip(airports_df['longitude'], airports_df['latitude']):
+            distance.append(haversine(latitude, longitude, flight_lat, flight_lon ))
+
+        airports_min = airports_df.iloc[np.argmin(distance)]["name"]
+        return airports_min
+    
+
     
     return airports_df, flights_df
 
